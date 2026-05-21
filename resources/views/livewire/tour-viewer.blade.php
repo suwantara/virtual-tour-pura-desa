@@ -1,5 +1,6 @@
 <div
     x-data="tourViewer(@js($scenes), @js($scenes->first()['id'] ?? null))"
+    @keydown.space.window.prevent="toggleAudio()"
     x-init="init()"
     class="tour-root"
     style="--brand: {{ $primaryColor }};"
@@ -61,6 +62,32 @@
             </div>
         </div>
 
+        {{-- Error overlay --}}
+        <div
+            x-show="hasError"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            class="tour-loading"
+            style="flex-direction: column; gap: 1rem;"
+        >
+            <svg class="w-10 h-10 text-stone-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3 21l6.75-6.75 1.5 1.5M21 3l-9 9"/>
+            </svg>
+            <p class="text-sm text-stone-500">Foto panorama tidak dapat dimuat.</p>
+        </div>
+
+        {{-- Loading overlay --}}
+        <div
+            x-show="isLoading && !hasError"
+            x-transition:leave="transition ease-in duration-300"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="tour-loading"
+        >
+            <div class="tour-loading__ring"></div>
+        </div>
+
         {{-- Pannellum container --}}
         <div id="panorama" class="w-full h-full">
             @if ($scenes->isEmpty())
@@ -72,6 +99,42 @@
                 </div>
             @endif
         </div>
+    </div>
+
+    {{-- Audio narration player --}}
+    <div
+        x-show="audioHasNarration"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 translate-y-2"
+        x-transition:enter-end="opacity-100 translate-y-0"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 translate-y-0"
+        x-transition:leave-end="opacity-0 translate-y-2"
+        class="tour-audio-bar"
+    >
+        <button @click="toggleAudio()" class="tour-audio-btn" :title="audioPlaying ? 'Jeda narasi' : 'Putar narasi'">
+            {{-- Play icon --}}
+            <svg x-show="!audioPlaying" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"/>
+            </svg>
+            {{-- Pause icon --}}
+            <svg x-show="audioPlaying" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+            </svg>
+        </button>
+
+        <div class="tour-audio-info">
+            <span class="tour-audio-label" x-text="audioPlaying ? 'Narasi diputar…' : 'Narasi tersedia'"></span>
+            <div class="tour-audio-progress" x-show="audioPlaying">
+                <div class="tour-audio-progress__bar" :style="`width: ${audioProgress}%`"></div>
+            </div>
+        </div>
+
+        <button @click="stopAudio()" x-show="audioPlaying" class="tour-audio-stop" title="Berhenti">
+            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M6 6h12v12H6z"/>
+            </svg>
+        </button>
     </div>
 
     {{-- Scene navigation strip --}}
@@ -187,6 +250,9 @@
             _preloadedUrls: new Set(),
             _preloadTimer: null,
 
+            isLoading: true,
+            hasError: false,
+
             modal: {
                 open: false, type: null, label: '',
                 description: '', url: null, mediaUrl: null, mediaType: null,
@@ -197,6 +263,12 @@
             coordYaw: '0.0',
             coordCopied: false,
             _coordInterval: null,
+
+            _audio: null,
+            _progressTimer: null,
+            audioPlaying: false,
+            audioHasNarration: false,
+            audioProgress: 0,
 
             safeUrl(url) {
                 if (!url) return '#';
@@ -238,11 +310,19 @@
                     scenes: pannellumScenes,
                 });
 
+                this.viewer.on('error', () => {
+                    this.isLoading = false;
+                    this.hasError = true;
+                });
+
                 this.viewer.on('scenechange', (id) => {
+                    this.isLoading = true;
+                    this.hasError = false;
                     this.currentSceneId = id;
                     const scene = scenes.find(s => `scene-${s.id}` === id);
                     this.currentSceneName = scene ? scene.name : '';
                     this._schedulePreload(id);
+                    this._loadSceneAudio(scene);
                 });
 
                 this.currentSceneId = firstKey;
@@ -250,7 +330,12 @@
                 this.currentSceneName = firstScene ? firstScene.name : '';
 
                 this.viewer.on('load', () => {
+                    this.isLoading = false;
                     this._schedulePreload(this.currentSceneId);
+                    if (!this._audio) {
+                        const firstScene = scenes.find(s => `scene-${s.id}` === firstKey);
+                        this._loadSceneAudio(firstScene);
+                    }
                 });
 
                 window.__tourOpenModal = (args) => {
@@ -358,6 +443,69 @@
                         },
                     };
                 });
+            },
+
+            _loadSceneAudio(scene) {
+                this._destroyAudio();
+                if (!scene?.audio_path) {
+                    this.audioHasNarration = false;
+                    return;
+                }
+                this.audioHasNarration = true;
+                this._audio = new Audio(scene.audio_path);
+                this._audio.addEventListener('ended', () => {
+                    this.audioPlaying = false;
+                    this.audioProgress = 0;
+                    clearInterval(this._progressTimer);
+                });
+                this._audio.play().then(() => {
+                    this.audioPlaying = true;
+                    this._startProgressTimer();
+                }).catch(() => {
+                    this.audioPlaying = false;
+                });
+            },
+
+            _startProgressTimer() {
+                clearInterval(this._progressTimer);
+                this._progressTimer = setInterval(() => {
+                    if (!this._audio || !this._audio.duration) return;
+                    this.audioProgress = (this._audio.currentTime / this._audio.duration) * 100;
+                }, 250);
+            },
+
+            _destroyAudio() {
+                if (this._audio) {
+                    this._audio.pause();
+                    this._audio.src = '';
+                    this._audio = null;
+                }
+                clearInterval(this._progressTimer);
+                this.audioPlaying = false;
+                this.audioProgress = 0;
+            },
+
+            toggleAudio() {
+                if (!this._audio) return;
+                if (this._audio.paused) {
+                    this._audio.play().then(() => {
+                        this.audioPlaying = true;
+                        this._startProgressTimer();
+                    });
+                } else {
+                    this._audio.pause();
+                    this.audioPlaying = false;
+                    clearInterval(this._progressTimer);
+                }
+            },
+
+            stopAudio() {
+                if (!this._audio) return;
+                this._audio.pause();
+                this._audio.currentTime = 0;
+                this.audioPlaying = false;
+                this.audioProgress = 0;
+                clearInterval(this._progressTimer);
             },
 
             switchScene(sceneId) {
