@@ -2,30 +2,6 @@
     title="Wiki — Pura Desa Adat Tambawu"
     metaDescription="Ensiklopedia lengkap tentang Pura Desa Adat Tambawu: sejarah, pelinggih, ritual, tokoh, dan glosarium istilah adat Bali."
 >
-<style>
-.wiki-root { transition: background-color 0.2s, color 0.2s; }
-.wiki-root.dark { background-color: #0c0a09; color: #f5f5f4; }
-.wiki-root.dark header { background-color: rgba(12,10,9,0.9) !important; border-color: #44403c; box-shadow: none !important; }
-.wiki-root.dark section.hero-section { background-color: #1c1917; border-color: #44403c; }
-.wiki-root.dark .cat-tab { background-color: #292524; color: #d6d3d1; }
-.wiki-root.dark .cat-tab:hover { background-color: #44403c; color: #f5f5f4; }
-.wiki-root.dark .cat-icon-wrap { background-color: rgba(190,18,60,0.15); border-color: rgba(190,18,60,0.3); }
-.wiki-root.dark h2.cat-title { color: #f5f5f4; }
-.wiki-root.dark .article-card { background-color: #1c1917; border-color: #44403c; }
-.wiki-root.dark .article-card:hover { background-color: #292524; border-color: #57534e; }
-.wiki-root.dark .article-card h3 { color: #e7e5e4; }
-.wiki-root.dark .article-card:hover h3 { color: #f5f5f4; }
-.wiki-root.dark .article-card p { color: #a8a29e; }
-.wiki-root.dark footer { border-color: #292524; }
-.wiki-root.dark .text-stone-400 { color: #78716c; }
-.wiki-root.dark .text-stone-500 { color: #a8a29e; }
-.wiki-root.dark .text-stone-800 { color: #e7e5e4; }
-.wiki-root.dark nav a.back-link { color: #a8a29e; }
-.wiki-root.dark nav a.back-link:hover { color: #f5f5f4; }
-.wiki-root.dark .dark-toggle { color: #a8a29e; }
-.wiki-root.dark .dark-toggle:hover { background-color: #292524; color: #f5f5f4; }
-.dark-toggle:hover { background-color: #f5f4f2; }
-</style>
 
 <div
     x-data="{
@@ -43,8 +19,8 @@
 <header
     x-data="{ scrolled: false }"
     x-init="window.addEventListener('scroll', () => { scrolled = window.scrollY > 40 })"
-    :class="scrolled ? 'bg-white/95 backdrop-blur-md shadow-md shadow-stone-200/80' : 'bg-white/80 backdrop-blur-sm'"
-    class="sticky top-0 z-50 transition-all duration-300 border-b border-stone-200"
+    :class="scrolled ? 'bg-white/95 backdrop-blur-md shadow-md shadow-stone-200/80' : 'bg-stone-50/90 backdrop-blur-sm'"
+    class="sticky top-0 z-50 transition-all duration-300"
 >
     <nav class="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
         <a href="{{ route('home') }}" class="back-link flex items-center gap-2 text-stone-500 hover:text-stone-800 transition-colors text-sm">
@@ -54,7 +30,7 @@
             Beranda
         </a>
 
-        <span class="text-stone-800 font-semibold tracking-wide text-sm">Wiki Pura Desa Tambawu</span>
+        <span class="nav-title text-stone-800 font-semibold tracking-wide text-sm">Wiki Pura Desa Tambawu</span>
 
         <div class="flex items-center gap-2">
             {{-- Dark mode toggle --}}
@@ -83,7 +59,7 @@
 </header>
 
 {{-- ══════════════════ HERO ══════════════════ --}}
-<section class="hero-section border-b border-stone-200 bg-stone-50">
+<section class="hero-section bg-stone-50">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
         <div class="flex items-center gap-2 text-stone-400 text-xs uppercase tracking-widest mb-4">
             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -103,9 +79,9 @@
             <a href="#semua" class="cat-tab px-3 py-1.5 rounded-full text-xs font-medium bg-stone-200 text-stone-600 hover:bg-stone-300 transition-colors">
                 Semua
             </a>
-            @foreach ($categories as $cat)
-                <a href="#{{ $cat->slug }}" class="cat-tab px-3 py-1.5 rounded-full text-xs font-medium bg-stone-200 text-stone-600 hover:bg-stone-300 transition-colors">
-                    {{ $cat->name }}
+            @foreach ($sections as $section)
+                <a href="#{{ $section['category']->slug }}" class="cat-tab px-3 py-1.5 rounded-full text-xs font-medium bg-stone-200 text-stone-600 hover:bg-stone-300 transition-colors">
+                    {{ $section['category']->name }}
                 </a>
             @endforeach
         </div>
@@ -114,15 +90,13 @@
 
 {{-- ══════════════════ ARTIKEL ══════════════════ --}}
 <main class="max-w-6xl mx-auto px-4 sm:px-6 py-12 space-y-16" id="semua">
-    @foreach ($categories as $cat)
-        @php $articles = $grouped->get($cat->id, collect()) @endphp
-        @if ($articles->isNotEmpty())
-        <section id="{{ $cat->slug }}">
+    @foreach ($sections as $section)
+        <section id="{{ $section['category']->slug }}">
             {{-- Category heading --}}
             <div class="flex items-center gap-3 mb-6">
                 <div class="cat-icon-wrap w-8 h-8 rounded-lg bg-rose-100 border border-rose-200 flex items-center justify-center flex-shrink-0">
-                    @if ($cat->icon)
-                        <x-dynamic-component :component="$cat->icon" class="w-4 h-4 text-rose-600"/>
+                    @if ($section['category']->icon)
+                        <x-dynamic-component :component="$section['category']->icon" class="w-4 h-4 text-rose-600"/>
                     @else
                         <svg class="w-4 h-4 text-rose-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z"/>
@@ -130,14 +104,14 @@
                     @endif
                 </div>
                 <div>
-                    <h2 class="cat-title text-lg font-semibold text-stone-900">{{ $cat->name }}</h2>
-                    <p class="text-xs text-stone-400">{{ $articles->count() }} artikel</p>
+                    <h2 class="cat-title text-lg font-semibold text-stone-900">{{ $section['category']->name }}</h2>
+                    <p class="text-xs text-stone-400">{{ $section['articles']->count() }} artikel</p>
                 </div>
             </div>
 
             {{-- Article cards --}}
             <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                @foreach ($articles as $article)
+                @foreach ($section['articles'] as $article)
                 <a href="{{ route('wiki.show', $article->slug) }}"
                    class="article-card group block bg-white border border-stone-200 rounded-xl p-5 hover:border-stone-300 hover:bg-stone-50 transition-all duration-200 shadow-sm hover:shadow-md">
                     <h3 class="text-sm font-semibold text-stone-800 group-hover:text-stone-900 mb-2 leading-snug">
@@ -156,12 +130,11 @@
                 @endforeach
             </div>
         </section>
-        @endif
     @endforeach
 </main>
 
 {{-- ══════════════════ FOOTER ══════════════════ --}}
-<footer class="border-t border-stone-200 mt-16">
+<footer class="bg-stone-50 mt-16">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-400">
         <span>Nandika PBL 2025 · Kelompok 2</span>
         <div class="flex items-center gap-4">
