@@ -96,9 +96,10 @@ class ManageSectionVisibility extends SiteSettingPage
         ];
 
         foreach ($keys as $key) {
+            $value = $state[$key] ?? false;
             SiteSetting::set(
                 'sections.'.$key,
-                ($state[$key] ?? true) ? '1' : '0'
+                $value ? '1' : '0'
             );
         }
 
