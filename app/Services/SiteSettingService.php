@@ -21,17 +21,20 @@ class SiteSettingService
         return [
             'navbarSiteNameTop' => $this->settings->get('navbar.site_name_top', 'Pura Desa'),
             'navbarSiteNameBottom' => $this->settings->get('navbar.site_name_bottom', 'Tambawu'),
+            'showHero' => $this->bool('sections.show_hero'),
             'heroBadge' => $this->settings->get('hero.badge_text', 'Digital Heritage · Digital Archive · PBL 2025'),
             'heroKaligrafi' => $this->settings->get('hero.kaligrafi', 'Tri Kahyangan · Desa Adat Tambawu'),
             'heroTitleMain' => $heroTitleMain,
             'heroTitleSub' => $heroTitleSub,
             'heroSubtitle' => $heroSubtitle,
+            'showTentang' => $this->bool('sections.show_tentang'),
             'tentangSectionLabel' => $this->settings->get('tentang_pura.section_label', 'Warisan Budaya'),
             'tentangSectionTitle' => $this->settings->get('tentang_pura.section_title', 'Tentang Pura'),
             'tentangSectionOrnament' => $this->settings->get('tentang_pura.section_ornament', 'Tri Kahyangan · Dewa Brahma'),
             'tentangSejarahTitle' => $this->settings->get('tentang_pura.sejarah_title', 'Sejarah & Latar Belakang'),
             'tentangParagraphs' => $this->settings->getJson('tentang_pura.paragraphs'),
             'tentangStats' => $this->settings->getJson('tentang_pura.stats'),
+            'showTourCta' => $this->bool('sections.show_tour_cta'),
             'tourCtaSectionLabel' => $this->settings->get('tour_cta.section_label', 'Eksplorasi Digital'),
             'tourCtaTitle' => $this->settings->get('tour_cta.title', 'Jelajahi Pura'),
             'tourCtaAccent' => $this->settings->get('tour_cta.title_accent', 'dalam 360°'),
@@ -41,15 +44,18 @@ class SiteSettingService
                 ->filter()
                 ->values()
                 ->all(),
+            'showPelinggih' => $this->bool('sections.show_pelinggih'),
             'pelinggihSectionLabel' => $this->settings->get('pelinggih.section_label', 'Katalog Digital'),
             'pelinggihSectionTitle' => $this->settings->get('pelinggih.section_title', 'Pelinggih Pura'),
             'pelinggihSectionDescription' => $this->settings->get('pelinggih.section_description', 'Setiap bangunan suci memiliki fungsi dan makna spiritual tersendiri. Berikut pelinggih-pelinggih utama yang dapat dijelajahi dalam virtual tour.'),
             'pelinggihItems' => $this->settings->getJson('pelinggih.items'),
+            'showWikiCta' => $this->bool('sections.show_wiki_cta'),
             'wikiCtaLabel' => $this->settings->get('wiki_cta.label', 'Ensiklopedia Digital'),
             'wikiCtaTitle' => $this->settings->get('wiki_cta.title', 'Wiki'),
             'wikiCtaAccent' => $this->settings->get('wiki_cta.title_accent', 'Pura Desa Tambawu'),
             'wikiCtaDescription' => $this->settings->get('wiki_cta.description', 'Dokumentasi lengkap tentang sejarah, pelinggih, ritual, tokoh, dan glosarium istilah adat Bali — semua tersedia dalam satu referensi yang mudah dijelajahi.'),
             'wikiCtaCategories' => $this->buildWikiCategories(),
+            'showMangku' => $this->bool('sections.show_mangku'),
             'mangkuSectionLabel' => $this->settings->get('mangku.section_label', 'Pengempon Pura'),
             'mangkuAvatarBadge' => $this->settings->get('mangku.avatar_badge', 'Jro Mangku Desa'),
             'mangkuName' => $this->settings->get('mangku.name', 'Jro Made Rena Atmaja'),
@@ -57,11 +63,13 @@ class SiteSettingService
             'mangkuQuote' => $this->settings->get('mangku.quote', ''),
             'mangkuBio' => $this->settings->get('mangku.bio', ''),
             'mangkuAvatarUrl' => $this->resolveStorageUrl($this->settings->get('mangku.avatar')),
+            'showNandika' => $this->bool('sections.show_nandika'),
             'nandikaSectionLabel' => $this->settings->get('nandika.section_label', 'Project Akademik'),
             'nandikaSectionTitle' => $this->settings->get('nandika.section_title', 'Nandika —'),
             'nandikaSectionAccent' => $this->settings->get('nandika.section_accent', 'Nusantara Digital Archive'),
             'nandikaDescription' => $this->settings->get('nandika.description', ''),
             'nandikaTags' => $this->settings->getJson('nandika.tags'),
+            'showTim' => $this->bool('sections.show_tim'),
             'timDosenLabel' => $this->settings->get('tim.dosen_label', 'Dosen Pembimbing'),
             'timSectionLabel' => $this->settings->get('tim.section_label', 'Kelompok 2 · PBL 2025'),
             'timSectionTitle' => $this->settings->get('tim.section_title', 'Tim Nandika'),
@@ -70,6 +78,7 @@ class SiteSettingService
             'dosenName' => $this->settings->get('tim.dosen_name'),
             'dosenNip' => $this->settings->get('tim.dosen_nip'),
             'dosenPhotoUrl' => $this->resolveStorageUrl($this->settings->get('tim.dosen_photo')),
+            'showKontak' => $this->bool('sections.show_kontak'),
             'kontakSectionLabel' => $this->settings->get('kontak.section_label', 'Hubungi Kami'),
             'kontakSectionTitle' => $this->settings->get('kontak.section_title', 'Kontak'),
             'kontakItems' => $this->settings->getJson('kontak.items'),
@@ -80,6 +89,11 @@ class SiteSettingService
             'siteUrl' => url('/'),
             'pageTitle' => 'Virtual Tour — '.$heroTitleMain.' '.$heroTitleSub,
         ];
+    }
+
+    private function bool(string $key): bool
+    {
+        return $this->settings->get($key, '1') !== '0';
     }
 
     private function resolveStorageUrl(?string $path): ?string
