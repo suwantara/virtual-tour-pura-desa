@@ -11,6 +11,13 @@ else
     echo "  → Composer dependencies already installed."
 fi
 
+# ── Ensure storage directories exist ───────────────────────────────────────
+mkdir -p /var/www/html/storage/framework/{views,cache,sessions,testing}
+mkdir -p /var/www/html/storage/logs
+mkdir -p /var/www/html/storage/app/public
+mkdir -p /var/www/html/bootstrap/cache
+chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
 # ── Wait for database ──────────────────────────────────────────────────────
 echo "  → Waiting for database..."
 until php artisan db:show --no-interaction > /dev/null 2>&1; do
