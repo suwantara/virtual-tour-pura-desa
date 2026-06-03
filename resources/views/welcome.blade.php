@@ -181,6 +181,7 @@
 </header>
 
 {{-- ═══════════════════════════════ HERO ═══════════════════════════════ --}}
+@if($showHero)
 <section id="hero" class="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
 
     {{-- Background --}}
@@ -257,8 +258,10 @@
         </div>
     </div>
 </section>
+@endif
 
 {{-- ════════════════════════════ TENTANG PURA ════════════════════════════ --}}
+@if($showTentang)
 <section id="tentang-pura" class="bg-stone-100 text-stone-900 py-16 md:py-28">
     <div class="max-w-7xl mx-auto px-4 sm:px-6">
 
@@ -307,8 +310,10 @@
         </div>
     </div>
 </section>
+@endif
 
 {{-- ════════════════════════════ VIRTUAL TOUR CTA ════════════════════════ --}}
+@if($showTourCta)
 <section id="virtual-tour" class="bg-stone-900 py-16 md:py-28 relative overflow-hidden">
 
     <div class="absolute right-0 top-1/2 -translate-y-1/2 w-80 h-80 rounded-full border border-stone-700/20 opacity-30 hidden sm:block"></div>
@@ -374,8 +379,10 @@
         </div>
     </div>
 </section>
+@endif
 
 {{-- ════════════════════════════ PELINGGIH HIGHLIGHT ════════════════════ --}}
+@if($showPelinggih)
 <section id="pelinggih" class="bg-stone-950 py-16 md:py-28">
     <div class="max-w-7xl mx-auto px-4 sm:px-6">
 
@@ -412,8 +419,10 @@
         </div>
     </div>
 </section>
+@endif
 
 {{-- ════════════════════════════ WIKI CTA ════════════════════════════════ --}}
+@if($showWikiCta)
 <section class="bg-stone-950 py-16 md:py-24 border-t border-stone-800/40">
     <div class="max-w-7xl mx-auto px-4 sm:px-6">
         <div class="grid md:grid-cols-2 gap-12 items-center">
@@ -477,8 +486,10 @@
         </div>
     </div>
 </section>
+@endif
 
 {{-- ════════════════════════════ PROFIL MANGKU ══════════════════════════ --}}
+@if($showMangku)
 <section class="bg-stone-100 py-16 md:py-24">
     <div class="max-w-7xl mx-auto px-4 sm:px-6">
         <div class="grid md:grid-cols-2 gap-12 items-center">
@@ -522,8 +533,10 @@
         </div>
     </div>
 </section>
+@endif
 
 {{-- ════════════════════════════ TENTANG NANDIKA ════════════════════════ --}}
+@if($showNandika)
 <section class="bg-stone-950 py-16 md:py-24 border-t border-stone-800/60">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center">
         <p class="text-stone-500 text-xs tracking-widest uppercase font-medium mb-4">{{ $nandikaSectionLabel }}</p>
@@ -550,8 +563,10 @@
         </div>
     </div>
 </section>
+@endif
 
 {{-- ═══════════════════════════════ TIM ═══════════════════════════════════ --}}
+@if($showTim)
 <section id="tim" class="bg-stone-950 py-16 md:py-24 border-t border-stone-800/60">
     <div class="max-w-7xl mx-auto px-4 sm:px-6">
 
@@ -615,8 +630,10 @@
 
     </div>
 </section>
+@endif
 
 {{-- ════════════════════════════════ KONTAK ═══════════════════════════════ --}}
+@if($showKontak)
 <section id="kontak" class="bg-stone-900 py-16 md:py-24">
     <div class="max-w-7xl mx-auto px-4 sm:px-6">
         <div class="text-center mb-12">
@@ -653,6 +670,7 @@
         </div>
     </div>
 </section>
+@endif
 
 {{-- ════════════════════════════════ FOOTER ════════════════════════════════ --}}
 <footer class="bg-stone-950 border-t border-stone-800 py-8">

@@ -111,10 +111,15 @@ app/
 │   ├── Contracts/
 │   │   ├── VenueRepositoryInterface.php
 │   │   ├── SceneRepositoryInterface.php
+│   │   ├── HotspotRepositoryInterface.php
+│   │   ├── CategoryRepositoryInterface.php
+│   │   ├── SiteSettingRepositoryInterface.php
 │   │   └── WikiArticleRepositoryInterface.php
 │   ├── VenueRepository.php           # Semua query Venue
 │   ├── SceneRepository.php           # Semua query Scene
 │   ├── HotspotRepository.php         # Semua query Hotspot
+│   ├── CategoryRepository.php        # Semua query Category
+│   ├── SiteSettingRepository.php     # Semua query SiteSetting
 │   └── WikiArticleRepository.php     # Semua query WikiArticle
 │
 └── Services/
@@ -122,7 +127,9 @@ app/
     ├── VenueService.php              # Logika bisnis Venue
     ├── SceneService.php              # Build data untuk Pannellum
     ├── HotspotService.php            # Logika bisnis Hotspot
-    └── WikiService.php               # Grouping & lookup artikel wiki
+    ├── CategoryService.php           # Daftar kategori untuk filter
+    ├── SiteSettingService.php        # Konten welcome page
+    ├── WikiService.php               # Grouping & lookup artikel wiki
 
 resources/
 ├── css/app.css                       # Tailwind CSS v4
