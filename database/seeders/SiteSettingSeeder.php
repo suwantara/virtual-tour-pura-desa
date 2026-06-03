@@ -38,6 +38,16 @@ class SiteSettingSeeder extends Seeder
 
             'footer.venue_text' => 'Pura Desa Adat Tambawu · Denpasar, Bali',
             'footer.copyright' => 'Nandika PBL 2025 · Kelompok 2 · Hak Cipta Dilindungi',
+
+            'sections.show_hero' => '1',
+            'sections.show_tentang' => '1',
+            'sections.show_tour_cta' => '1',
+            'sections.show_pelinggih' => '1',
+            'sections.show_wiki_cta' => '1',
+            'sections.show_mangku' => '1',
+            'sections.show_nandika' => '1',
+            'sections.show_tim' => '1',
+            'sections.show_kontak' => '1',
         ];
 
         foreach ($strings as $key => $value) {

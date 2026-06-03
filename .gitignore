@@ -24,6 +24,9 @@ yarn-error.log
 /.vscode
 /.zed
 
+/.flyenv
+/public/.flyenv
+
 # Internal project docs — not for public repo
 /Digital Heritage/
 /ARCHITECTURE.md
